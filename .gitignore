@@ -1,0 +1,36 @@
+# Node.js
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+.env
+
+# Logs
+logs
+*.log
+pids
+*.pid
+*.seed
+
+# OS generated
+.DS_Store
+Thumbs.db
+
+# Editor-specific
+.vscode/
+.idea/
+
+# React build
+/client/build/
+
+# MongoDB dump
+dump/
+
+# Coverage reports
+coverage/
+
+# Optional: if you use local database tooling
+.env.local
+.env.development
+.env.test
+.env.production
