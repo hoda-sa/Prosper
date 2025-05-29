@@ -16,13 +16,61 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { userAPI, transactionAPI, budgetAPI } from '../utils/api';
 import Loading from './Loading';
+import CategoryPieChart from './PieChart';
 
 const Dashboard = () => {
     const { getAccessTokenSilently, isAuthenticated, user } = useAuth0();
-    const history = useHistory(); // Add useHistory hook
+    const history = useHistory();
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [categoryData, setCategoryData] = useState({ expenses: [], income: [] });
+
+    // Process transactions for category pie charts
+    const processCategoryData = useCallback((transactions) => {
+        if (!transactions || transactions.length === 0) {
+            setCategoryData({ expenses: [], income: [] });
+            return;
+        }
+
+        // Group transactions by category and type
+        const expenseCategories = {};
+        const incomeCategories = {};
+
+        transactions.forEach(transaction => {
+            const amount = Math.abs(transaction.amount);
+            const category = transaction.category || 'Other';
+
+            if (transaction.type === 'expense') {
+                expenseCategories[category] = (expenseCategories[category] || 0) + amount;
+            } else if (transaction.type === 'income') {
+                incomeCategories[category] = (incomeCategories[category] || 0) + amount;
+            }
+        });
+
+        // Convert to array format for Recharts
+        const expenseData = Object.entries(expenseCategories).map(([name, value]) => ({
+            name,
+            value,
+            formattedValue: formatCurrency(value)
+        }));
+
+        const incomeData = Object.entries(incomeCategories).map(([name, value]) => ({
+            name,
+            value,
+            formattedValue: formatCurrency(value)
+        }));
+
+        setCategoryData({
+            expenses: expenseData,
+            income: incomeData
+        });
+
+        console.log('📊 Category data processed:', {
+            expenses: expenseData.length,
+            income: incomeData.length
+        });
+    }, []);
 
     const fetchDashboardData = useCallback(async () => {
         try {
@@ -30,6 +78,9 @@ const Dashboard = () => {
             setError(null);
 
             console.log('🔄 Fetching dashboard data...');
+
+            // Declare these variables outside the try block
+            let allTransactions = { data: [] };
 
             // Try to fetch dashboard data with better error handling
             try {
@@ -41,6 +92,9 @@ const Dashboard = () => {
                 try {
                     recentTransactions = await transactionAPI.getTransactions(getAccessTokenSilently, { limit: 5 });
                     console.log('✅ Recent transactions:', recentTransactions);
+
+                    // Fetch all transactions for category analysis
+                    allTransactions = await transactionAPI.getTransactions(getAccessTokenSilently);
                 } catch (transactionError) {
                     console.warn('⚠️ Could not fetch recent transactions:', transactionError.message);
                 }
@@ -61,11 +115,12 @@ const Dashboard = () => {
                         netIncome: 0,
                         totalTransactions: 0
                     },
-                    insights: dashboard.data?.insights || [],
                     recentTransactions: recentTransactions.data || [],
                     budgets: budgetSummary.data || null,
                     monthlyTrends: dashboard.data?.monthlyTrends || []
                 });
+
+                processCategoryData(allTransactions.data || []);
 
             } catch (dashboardError) {
                 console.error('❌ Dashboard API error:', dashboardError);
@@ -92,6 +147,8 @@ const Dashboard = () => {
                         budgets: null,
                         monthlyTrends: []
                     });
+                    // Set empty category data
+                    setCategoryData({ expenses: [], income: [] });
                 } else {
                     throw dashboardError;
                 }
@@ -109,7 +166,6 @@ const Dashboard = () => {
                     netIncome: 0,
                     totalTransactions: 0
                 },
-                insights: [],
                 recentTransactions: [],
                 budgets: null,
                 monthlyTrends: []
@@ -117,13 +173,49 @@ const Dashboard = () => {
         } finally {
             setLoading(false);
         }
-    }, [getAccessTokenSilently]);
+    }, [getAccessTokenSilently, processCategoryData]);
 
     useEffect(() => {
         if (isAuthenticated) {
             fetchDashboardData();
         }
     }, [isAuthenticated, fetchDashboardData]);
+
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'CAD'
+        }).format(amount || 0);
+    };
+
+    const getNetIncomeColor = (netIncome) => {
+        if (netIncome > 0) return 'success';
+        if (netIncome < 0) return 'danger';
+        return 'warning';
+    };
+
+    // Color schemes for pie charts
+    const expenseColors = [
+        "#F94144", // red
+        "#F9C74F", // yellow
+        "#F3722C", // orange
+        "#4D908E", // muted teal
+        "#F9844A", // coral
+        "#90BE6D", // light green
+        "#43AA8B", // teal
+
+    ];
+
+    const incomeColors = [
+        "#0A9396",
+        "#94D2BD",
+        "#E9D8A6",
+        "#EE9B00",
+        "#CA6702",
+        "#BB3E03",
+        "#AE2012",
+        "#9B2226"
+    ];
 
     if (!isAuthenticated) {
         return (
@@ -154,19 +246,6 @@ const Dashboard = () => {
             </Container>
         );
     }
-
-    const formatCurrency = (amount) => {
-        return new Intl.NumberFormat('en-US', {
-            style: 'currency',
-            currency: 'USD'
-        }).format(amount || 0);
-    };
-
-    const getNetIncomeColor = (netIncome) => {
-        if (netIncome > 0) return 'success';
-        if (netIncome < 0) return 'danger';
-        return 'warning';
-    };
 
     return (
         <Container fluid className="py-4">
@@ -245,6 +324,26 @@ const Dashboard = () => {
                             </div>
                         </CardBody>
                     </Card>
+                </Col>
+            </Row>
+
+            {/* Category Charts Row */}
+            <Row className="mb-4">
+                <Col lg={6} className="mb-4">
+                    <CategoryPieChart
+                        data={categoryData.expenses}
+                        title="Expenses by Category"
+                        colors={expenseColors}
+                        formatCurrency={formatCurrency}
+                    />
+                </Col>
+                <Col lg={6} className="mb-4">
+                    <CategoryPieChart
+                        data={categoryData.income}
+                        title="Income by Category"
+                        colors={incomeColors}
+                        formatCurrency={formatCurrency}
+                    />
                 </Col>
             </Row>
 
@@ -365,6 +464,7 @@ const Dashboard = () => {
                 </Col>
             </Row>
 
+
             {/* Quick Actions */}
             <Row className="mt-4">
                 <Col>
@@ -372,7 +472,7 @@ const Dashboard = () => {
                         <CardBody>
                             <h5 className="mb-3">Quick Actions</h5>
                             <Row>
-                                <Col md={3} className="mb-2">
+                                <Col md={4} className="mb-2">
                                     <Button
                                         color="success"
                                         block
@@ -382,7 +482,7 @@ const Dashboard = () => {
                                         Add Income
                                     </Button>
                                 </Col>
-                                <Col md={3} className="mb-2">
+                                <Col md={4} className="mb-2">
                                     <Button
                                         color="danger"
                                         block
@@ -392,7 +492,7 @@ const Dashboard = () => {
                                         Add Expense
                                     </Button>
                                 </Col>
-                                <Col md={3} className="mb-2">
+                                <Col md={4} className="mb-2">
                                     <Button
                                         color="primary"
                                         block
@@ -400,16 +500,6 @@ const Dashboard = () => {
                                     >
                                         <FontAwesomeIcon icon="chart-pie" className="mr-2" />
                                         Create Budget
-                                    </Button>
-                                </Col>
-                                <Col md={3} className="mb-2">
-                                    <Button
-                                        color="info"
-                                        block
-                                        onClick={() => history.push('/reports')}
-                                    >
-                                        <FontAwesomeIcon icon="chart-line" className="mr-2" />
-                                        View Reports
                                     </Button>
                                 </Col>
                             </Row>

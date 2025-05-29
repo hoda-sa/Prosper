@@ -59,20 +59,42 @@ const Transactions = () => {
 
             console.log('🔄 Fetching transactions and categories...');
 
-            const [transactionsResponse, categoriesResponse] = await Promise.all([
-                transactionAPI.getTransactions(getAccessTokenSilently, { limit: 50 }),
-                categoryAPI.getCategories(getAccessTokenSilently)
-            ]);
+            // First, try to get categories
+            let categoriesResponse;
+            try {
+                categoriesResponse = await categoryAPI.getCategories(getAccessTokenSilently);
+                console.log('✅ Categories:', categoriesResponse.data?.length || 0);
+            } catch (categoryError) {
+                console.warn('⚠️ Could not fetch categories, will try to initialize:', categoryError.message);
+                categoriesResponse = { data: [] };
+            }
 
+            // If no categories exist, initialize default categories
+            if (!categoriesResponse.data || categoriesResponse.data.length === 0) {
+                console.log('🔄 No categories found, initializing default categories...');
+                try {
+                    await categoryAPI.initializeCategories(getAccessTokenSilently);
+                    console.log('✅ Default categories initialized');
+
+                    // Fetch categories again after initialization
+                    categoriesResponse = await categoryAPI.getCategories(getAccessTokenSilently);
+                    console.log('✅ Categories after initialization:', categoriesResponse.data?.length || 0);
+                } catch (initError) {
+                    console.error('❌ Failed to initialize categories:', initError);
+                    setError('Failed to initialize categories. Please try refreshing the page.');
+                    return;
+                }
+            }
+
+            // Fetch transactions
+            const transactionsResponse = await transactionAPI.getTransactions(getAccessTokenSilently, { limit: 50 });
             console.log('✅ Transactions:', transactionsResponse.data?.length || 0);
-            console.log('✅ Categories:', categoriesResponse.data?.length || 0);
 
             setTransactions(transactionsResponse.data || []);
             setCategories(categoriesResponse.data || []);
         } catch (error) {
             console.error('❌ Error fetching data:', error);
             setError(error.message);
-            // Set empty arrays on error to prevent undefined issues
             setTransactions([]);
             setCategories([]);
         } finally {
@@ -229,15 +251,7 @@ const Transactions = () => {
                 </Alert>
             )}
 
-            {/* Debug Info - Remove this after fixing */}
-            {process.env.NODE_ENV === 'development' && (
-                <Alert color="info" className="mb-4">
-                    <strong>Debug Info:</strong>
-                    Categories loaded: {categories.length} |
-                    Filtered categories: {getFilteredCategories().length} |
-                    Current type: {formData.type}
-                </Alert>
-            )}
+
 
             {/* Header */}
             <Row className="mb-4">
