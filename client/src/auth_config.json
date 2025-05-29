@@ -1,5 +1,5 @@
 {
   "domain": "dev-hoda.ca.auth0.com",
   "clientId": "Azk3kzqQVnaW1IZwUsJyCTXLvWMeIuD6",
-  "audience": "{yourApiIdentifier}"
+  "audience": "https://dev-hoda.ca.auth0.com/api/v2/"
 }

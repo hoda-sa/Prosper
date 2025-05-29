@@ -1,4 +1,3 @@
-// Load environment variables first
 require('dotenv').config();
 
 const express = require('express');
@@ -17,6 +16,7 @@ const budgetRoutes = require('./routes/budgets');
 const forecastRoutes = require('./routes/forecasts');
 const categoryRoutes = require('./routes/categories');
 const userRoutes = require('./routes/users');
+const plaidRoutes = require('./routes/plaid');
 
 // Import middleware
 const { errorHandler } = require('./middleware/errorHandler');
@@ -73,6 +73,7 @@ app.use('/api/budgets', authMiddleware, budgetRoutes);
 app.use('/api/forecasts', authMiddleware, forecastRoutes);
 app.use('/api/categories', authMiddleware, categoryRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
+app.use('/api/plaid', authMiddleware, plaidRoutes);
 
 // Root endpoint
 app.get('/', (req, res) => {
@@ -86,7 +87,8 @@ app.get('/', (req, res) => {
             budgets: '/api/budgets',
             forecasts: '/api/forecasts',
             categories: '/api/categories',
-            users: '/api/users'
+            users: '/api/users',
+            plaid: '/api/plaid'
         }
     });
 });
