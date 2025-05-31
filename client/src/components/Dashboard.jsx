@@ -11,20 +11,166 @@ import {
     CardText,
     Alert,
     Button,
-    Progress
+    Progress,
+    Input,
+    Label,
+    FormGroup
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { userAPI, transactionAPI, budgetAPI } from '../utils/api';
+import { transactionAPI, budgetAPI } from '../utils/api';
 import Loading from './Loading';
 import CategoryPieChart from './PieChart';
 
 const Dashboard = () => {
-    const { getAccessTokenSilently, isAuthenticated, user } = useAuth0();
+    const { getAccessTokenSilently, isAuthenticated, user, loginWithRedirect } = useAuth0();
     const history = useHistory();
     const [dashboardData, setDashboardData] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [categoryData, setCategoryData] = useState({ expenses: [], income: [] });
+    const [dateFilter, setDateFilter] = useState('last3months'); // Default to last 3 months
+
+
+
+    const handleLogin = () => {
+        console.log('🔄 Login button clicked');
+        try {
+            loginWithRedirect({
+                appState: {
+                    returnTo: window.location.pathname
+                },
+                authorizationParams: {
+                    redirect_uri: window.location.origin,
+                    ...(process.env.REACT_APP_AUTH0_AUDIENCE ? {
+                        audience: process.env.REACT_APP_AUTH0_AUDIENCE
+                    } : {})
+                }
+            });
+        } catch (error) {
+            console.error('❌ Login error:', error);
+        }
+    };
+    // Date filter options
+    const dateFilterOptions = [
+        { value: 'lastmonth', label: 'Last Month' },
+        { value: 'last3months', label: 'Last 3 Months' },
+        { value: 'last6months', label: 'Last 6 Months' },
+        { value: 'lastyear', label: 'Last Year' }
+    ];
+
+    // Get date range based on filter selection
+    const getDateRange = useCallback((filter) => {
+        const now = new Date();
+        let startDate;
+
+        switch (filter) {
+            case 'lastmonth':
+                // Last month from 1st to last day
+                const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+                startDate = lastMonth;
+                break;
+            case 'last3months':
+                // 3 months ago from today
+                startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+                break;
+            case 'last6months':
+                // 6 months ago from today
+                startDate = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
+                break;
+            case 'lastyear':
+                // 1 year ago from today
+                startDate = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                break;
+            default:
+                // Default to last 3 months
+                startDate = new Date(now.getFullYear(), now.getMonth() - 3, now.getDate());
+        }
+
+        const dateRange = {
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: now.toISOString().split('T')[0]
+        };
+
+        console.log('📅 Date range calculated:', {
+            filter,
+            startDate: dateRange.startDate,
+            endDate: dateRange.endDate,
+            startDateObj: startDate,
+            endDateObj: now
+        });
+
+        return dateRange;
+    }, []);
+
+    // Filter transactions by date range
+    const filterTransactionsByDate = useCallback((transactions, dateRange) => {
+        if (!transactions || transactions.length === 0) return [];
+
+        const { startDate, endDate } = dateRange;
+
+        console.log('🔍 Filtering transactions:', {
+            totalTransactions: transactions.length,
+            dateRange: { startDate, endDate }
+        });
+
+        const filtered = transactions.filter(transaction => {
+            const transactionDate = new Date(transaction.date);
+            const startDateObj = new Date(startDate + 'T00:00:00.000Z');
+            const endDateObj = new Date(endDate + 'T23:59:59.999Z');
+
+            const isInRange = transactionDate >= startDateObj && transactionDate <= endDateObj;
+
+            if (!isInRange) {
+                console.log('📅 Transaction outside range:', {
+                    description: transaction.description,
+                    transactionDate: transactionDate.toISOString(),
+                    startDate: startDateObj.toISOString(),
+                    endDate: endDateObj.toISOString()
+                });
+            }
+
+            return isInRange;
+        });
+
+        console.log('✅ Filtered results:', {
+            originalCount: transactions.length,
+            filteredCount: filtered.length
+        });
+
+        return filtered;
+    }, []);
+
+    // Calculate summary from filtered transactions
+    const calculateSummary = useCallback((transactions) => {
+        if (!transactions || transactions.length === 0) {
+            return {
+                income: 0,
+                expenses: 0,
+                netIncome: 0,
+                totalTransactions: 0
+            };
+        }
+
+        const summary = transactions.reduce((acc, transaction) => {
+            const amount = Math.abs(transaction.amount);
+
+            if (transaction.type === 'income') {
+                acc.income += amount;
+            } else if (transaction.type === 'expense') {
+                acc.expenses += amount;
+            }
+
+            acc.totalTransactions++;
+            return acc;
+        }, {
+            income: 0,
+            expenses: 0,
+            totalTransactions: 0
+        });
+
+        summary.netIncome = summary.income - summary.expenses;
+        return summary;
+    }, []);
 
     // Process transactions for category pie charts
     const processCategoryData = useCallback((transactions) => {
@@ -79,27 +225,47 @@ const Dashboard = () => {
 
             console.log('🔄 Fetching dashboard data...');
 
+            // Get date range for filtering
+            const dateRange = getDateRange(dateFilter);
+            console.log('📅 Date range:', dateRange);
+
             // Declare these variables outside the try block
             let allTransactions = { data: [] };
 
             // Try to fetch dashboard data with better error handling
             try {
-                const dashboard = await userAPI.getDashboard(getAccessTokenSilently);
-                console.log('✅ Dashboard data:', dashboard);
-
-                // Try to fetch transactions
-                let recentTransactions = { data: [] };
+                // Fetch transactions with date filter parameters
                 try {
-                    recentTransactions = await transactionAPI.getTransactions(getAccessTokenSilently, { limit: 5 });
-                    console.log('✅ Recent transactions:', recentTransactions);
+                    // Pass date range as query parameters to the API
+                    const transactionParams = {
+                        startDate: dateRange.startDate,
+                        endDate: dateRange.endDate,
+                        limit: 1000 // Increase limit to get more historical data
+                    };
 
-                    // Fetch all transactions for category analysis
-                    allTransactions = await transactionAPI.getTransactions(getAccessTokenSilently);
+                    allTransactions = await transactionAPI.getTransactions(getAccessTokenSilently, transactionParams);
+                    console.log('✅ All transactions with date filter:', allTransactions.data?.length || 0);
                 } catch (transactionError) {
-                    console.warn('⚠️ Could not fetch recent transactions:', transactionError.message);
+                    console.warn('⚠️ Could not fetch transactions:', transactionError.message);
                 }
 
-                // Try to fetch budget summary
+                // Since we're now filtering on the backend, we don't need client-side filtering
+                // But we'll keep it as a fallback for now
+                const filteredTransactions = allTransactions.data || [];
+                console.log('✅ Backend filtered transactions:', {
+                    total: filteredTransactions.length,
+                    dateRange
+                });
+
+                // Calculate summary from filtered transactions
+                const summary = calculateSummary(filteredTransactions);
+
+                // Get recent transactions (limit to 5 most recent from filtered set)
+                const recentTransactions = filteredTransactions
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 5);
+
+                // Try to fetch budget summary (not filtered by date)
                 let budgetSummary = { data: null };
                 try {
                     budgetSummary = await budgetAPI.getBudgetSummary(getAccessTokenSilently);
@@ -109,18 +275,13 @@ const Dashboard = () => {
                 }
 
                 setDashboardData({
-                    summary: dashboard.data?.summary || {
-                        income: 0,
-                        expenses: 0,
-                        netIncome: 0,
-                        totalTransactions: 0
-                    },
-                    recentTransactions: recentTransactions.data || [],
+                    summary: summary,
+                    recentTransactions: recentTransactions,
                     budgets: budgetSummary.data || null,
-                    monthlyTrends: dashboard.data?.monthlyTrends || []
+                    monthlyTrends: [] // This would need to be calculated from filtered data
                 });
 
-                processCategoryData(allTransactions.data || []);
+                processCategoryData(filteredTransactions);
 
             } catch (dashboardError) {
                 console.error('❌ Dashboard API error:', dashboardError);
@@ -173,13 +334,17 @@ const Dashboard = () => {
         } finally {
             setLoading(false);
         }
-    }, [getAccessTokenSilently, processCategoryData]);
+    }, [getAccessTokenSilently, processCategoryData, dateFilter, getDateRange, filterTransactionsByDate, calculateSummary]);
 
     useEffect(() => {
         if (isAuthenticated) {
             fetchDashboardData();
         }
     }, [isAuthenticated, fetchDashboardData]);
+
+    const handleDateFilterChange = (e) => {
+        setDateFilter(e.target.value);
+    };
 
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-US', {
@@ -221,10 +386,25 @@ const Dashboard = () => {
         return (
             <Container className="py-5">
                 <Row className="justify-content-center">
+                    <Col md={8} className="banner">
+                        <img
+                            src="/Welcome.png"
+                            alt="welcome"
+                            className='img-fluid'
+                        /></Col>
+
                     <Col md={8} className="text-center">
-                        <h1>Welcome to Prosper Finance</h1>
-                        <p className="lead">Your personal finance tracking made simple.</p>
-                        <p>Please log in to access your financial dashboard.</p>
+
+                        <h1 className="h3">Your personal finance tracking made simple</h1>
+                        <p>Sign up or log in to access your financial dashboard.</p>
+                        <Button
+                            color="primary"
+                            size="lg"
+                            onClick={handleLogin}
+                        >
+                            <FontAwesomeIcon className="me-2" />
+                            Get Started Here!
+                        </Button>
                     </Col>
                 </Row>
             </Container>
@@ -249,11 +429,31 @@ const Dashboard = () => {
 
     return (
         <Container fluid className="py-4">
-            {/* Welcome Header */}
+            {/* Welcome Header with Date Filter */}
             <Row className="mb-4">
-                <Col>
+                <Col md={8}>
+
                     <h1 className="h3">Welcome back, {user?.name?.split(' ')[0] || 'there'}! 👋</h1>
                     <p className="text-muted">Here's your financial overview</p>
+                </Col>
+                <Col md={4}>
+                    <FormGroup>
+                        <Label for="dateFilter" className="text-muted small">Time Period</Label>
+                        <Input
+                            type="select"
+                            name="dateFilter"
+                            id="dateFilter"
+                            value={dateFilter}
+                            onChange={handleDateFilterChange}
+                            className="form-control-sm"
+                        >
+                            {dateFilterOptions.map(option => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </Input>
+                    </FormGroup>
                 </Col>
             </Row>
 
@@ -263,7 +463,7 @@ const Dashboard = () => {
                     <Card className="h-100 border-0 shadow-sm">
                         <CardBody className="d-flex align-items-center">
                             <div className="flex-grow-1">
-                                <CardText className="text-muted mb-1">Monthly Income</CardText>
+                                <CardText className="text-muted mb-1">Total Income</CardText>
                                 <CardTitle className="h4 mb-0 text-success">
                                     {formatCurrency(dashboardData?.summary?.income)}
                                 </CardTitle>
@@ -279,7 +479,7 @@ const Dashboard = () => {
                     <Card className="h-100 border-0 shadow-sm">
                         <CardBody className="d-flex align-items-center">
                             <div className="flex-grow-1">
-                                <CardText className="text-muted mb-1">Monthly Expenses</CardText>
+                                <CardText className="text-muted mb-1">Total Expenses</CardText>
                                 <CardTitle className="h4 mb-0 text-danger">
                                     {formatCurrency(dashboardData?.summary?.expenses)}
                                 </CardTitle>
@@ -389,7 +589,7 @@ const Dashboard = () => {
                             ) : (
                                 <div className="text-center py-4">
                                     <FontAwesomeIcon icon="inbox" size="3x" className="text-muted mb-3" />
-                                    <p className="text-muted">No transactions yet</p>
+                                    <p className="text-muted">No transactions in selected period</p>
                                     <Button
                                         color="primary"
                                         tag={Link}

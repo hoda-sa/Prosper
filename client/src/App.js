@@ -10,6 +10,7 @@ import Dashboard from "./components/Dashboard";
 import Transactions from "./components/Transactions";
 import ConnectedAccounts from "./components/ConnectedAccounts";
 import TestConnection from "./components/TestConnection";
+import Profile from "./components/Profile";
 
 // Import FontAwesome
 import initFontAwesome from "./utils/initFontAwesome";
@@ -54,6 +55,7 @@ function App() {
             <Route path="/transactions" component={Transactions} />
             <Route path="/accounts" component={ConnectedAccounts} />
             <Route path="/test-connection" component={TestConnection} />
+            <Route path="/profile" component={Profile} />
             {/* Add more routes as needed */}
             <Route
               path="*"

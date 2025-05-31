@@ -56,8 +56,8 @@ const validatePagination = [
 
     query('limit')
         .optional()
-        .isInt({ min: 1, max: 100 })
-        .withMessage('Limit must be between 1 and 100'),
+        .isInt({ min: 1, max: 1000 }) // Increased max limit to 1000
+        .withMessage('Limit must be between 1 and 1000'),
 
     query('sortBy')
         .optional()
@@ -73,19 +73,20 @@ const validatePagination = [
 const validateDateRange = [
     query('startDate')
         .optional()
-        .isISO8601()
-        .withMessage('Start date must be a valid ISO date'),
+        .isDate({ format: 'YYYY-MM-DD' })
+        .withMessage('Start date must be in YYYY-MM-DD format'),
 
     query('endDate')
         .optional()
-        .isISO8601()
-        .withMessage('End date must be a valid ISO date')
+        .isDate({ format: 'YYYY-MM-DD' })
+        .withMessage('End date must be in YYYY-MM-DD format')
 ];
 
 // Helper function to check validation results
 const checkValidation = (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log('❌ Validation errors:', errors.array());
         return res.status(400).json({
             error: 'Validation failed',
             details: errors.array()
@@ -117,6 +118,15 @@ router.get('/',
             tags
         } = req.query;
 
+        console.log('📊 Transaction query params:', {
+            userId,
+            startDate,
+            endDate,
+            limit,
+            type,
+            category
+        });
+
         // Build query
         const query = { userId };
 
@@ -130,11 +140,18 @@ router.get('/',
             query.category = new RegExp(category, 'i');
         }
 
-        // Filter by date range
+        // Filter by date range - FIXED DATE HANDLING
         if (startDate || endDate) {
             query.date = {};
-            if (startDate) query.date.$gte = new Date(startDate);
-            if (endDate) query.date.$lte = new Date(endDate);
+            if (startDate) {
+                // Ensure startDate includes full day from 00:00:00
+                query.date.$gte = new Date(startDate + 'T00:00:00.000Z');
+            }
+            if (endDate) {
+                // Ensure endDate includes full day until 23:59:59
+                query.date.$lte = new Date(endDate + 'T23:59:59.999Z');
+            }
+            console.log('📅 Date filter applied:', query.date);
         }
 
         // Filter by amount range
@@ -166,6 +183,8 @@ router.get('/',
         // Only show completed transactions by default
         query.status = 'completed';
 
+        console.log('🔍 Final query:', JSON.stringify(query, null, 2));
+
         // Execute query with pagination
         const skip = (parseInt(page) - 1) * parseInt(limit);
         const sortObj = {};
@@ -179,6 +198,8 @@ router.get('/',
                 .lean(),
             Transaction.countDocuments(query)
         ]);
+
+        console.log('✅ Transactions found:', transactions.length, 'of', total, 'total');
 
         sendPaginatedResponse(res, transactions, page, limit, total, 'Transactions retrieved successfully');
     })
@@ -197,8 +218,8 @@ router.get('/summary',
         const defaultStartDate = new Date(now.getFullYear(), now.getMonth(), 1);
         const defaultEndDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-        const start = startDate ? new Date(startDate) : defaultStartDate;
-        const end = endDate ? new Date(endDate) : defaultEndDate;
+        const start = startDate ? new Date(startDate + 'T00:00:00.000Z') : defaultStartDate;
+        const end = endDate ? new Date(endDate + 'T23:59:59.999Z') : defaultEndDate;
 
         // Get summary data
         const summary = await Transaction.aggregate([
@@ -480,8 +501,8 @@ router.get('/export',
 
         if (startDate || endDate) {
             query.date = {};
-            if (startDate) query.date.$gte = new Date(startDate);
-            if (endDate) query.date.$lte = new Date(endDate);
+            if (startDate) query.date.$gte = new Date(startDate + 'T00:00:00.000Z');
+            if (endDate) query.date.$lte = new Date(endDate + 'T23:59:59.999Z');
         }
 
         const transactions = await Transaction.find(query)

@@ -384,10 +384,12 @@ const ConnectedAccounts = () => {
                         <p className="text-muted mb-4">
                             Connect your bank account to automatically import transactions and get a complete view of your finances.
                         </p>
-                        <PlaidLink
-                            onSuccess={handlePlaidSuccess}
-                            onError={handlePlaidError}
-                        />
+                        <div className="d-flex justify-content-center">
+                            <PlaidLink
+                                onSuccess={handlePlaidSuccess}
+                                onError={handlePlaidError}
+                            />
+                        </div>
                         <div className="mt-4">
                             <small className="text-muted">
                                 <FontAwesomeIcon icon="shield-alt" className="me-1" />
@@ -503,10 +505,13 @@ const ConnectedAccounts = () => {
                             <p className="text-muted mb-3">
                                 You can connect multiple banks to get a complete view of your finances.
                             </p>
-                            <PlaidLink
-                                onSuccess={handlePlaidSuccess}
-                                onError={handlePlaidError}
-                            />
+                            <div className="d-flex justify-content-center">
+                                <PlaidLink
+                                    onSuccess={handlePlaidSuccess}
+                                    onError={handlePlaidError}
+                                />
+                            </div>
+
                         </CardBody>
                     </Card>
                 </>

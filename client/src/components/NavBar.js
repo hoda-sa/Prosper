@@ -74,20 +74,21 @@ const NavBar = () => {
 
           <Collapse isOpen={isOpen} navbar className="justify-content-between">
             <Nav className="mx-auto d-flex flex-row" navbar>
-              <NavItem>
-                <NavLink
-                  tag={RouterNavLink}
-                  to="/"
-                  exact
-                  activeClassName="router-link-exact-active"
-                  className="d-flex align-items-center px-3"
-                >
-                  <FontAwesomeIcon icon="home" className="me-2" />
-                  Dashboard
-                </NavLink>
-              </NavItem>
+
               {isAuthenticated && (
                 <>
+                  <NavItem>
+                    <NavLink
+                      tag={RouterNavLink}
+                      to="/"
+                      exact
+                      activeClassName="router-link-exact-active"
+                      className="d-flex align-items-center px-3"
+                    >
+                      <FontAwesomeIcon icon="home" className="me-2" />
+                      Dashboard
+                    </NavLink>
+                  </NavItem>
                   <NavItem>
                     <NavLink
                       tag={RouterNavLink}
@@ -158,7 +159,7 @@ const NavBar = () => {
                     <DropdownItem header>
                       <div className="text-muted small text-truncate">{user.email}</div>
                     </DropdownItem>
-                    <DropdownItem divider />
+                    {/* <DropdownItem divider /> */}
                     <DropdownItem
                       tag={RouterNavLink}
                       to="/profile"
@@ -168,7 +169,11 @@ const NavBar = () => {
                       <FontAwesomeIcon icon="user" className="me-2" />
                       Profile
                     </DropdownItem>
-                    <DropdownItem
+                    
+                    {/* Updating user information and settings is 
+                    out of scope for this iteration of the project. */}
+
+                    {/* <DropdownItem
                       tag={RouterNavLink}
                       to="/settings"
                       activeClassName="router-link-exact-active"
@@ -176,7 +181,7 @@ const NavBar = () => {
                       <FontAwesomeIcon icon="cog" className="me-2" />
                       Settings
                     </DropdownItem>
-                    <DropdownItem divider />
+                    <DropdownItem divider /> */}
                     <DropdownItem onClick={() => logoutWithRedirect()}>
                       <FontAwesomeIcon icon="power-off" className="me-2" />
                       Log out
