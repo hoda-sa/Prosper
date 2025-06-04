@@ -117,7 +117,7 @@ router.post('/create-link-token',
                 products: PLAID_PRODUCTS,
                 country_codes: PLAID_COUNTRY_CODES,
                 language: 'en',
-                webhook: `${process.env.BACKEND_URL || 'http://localhost:5001'}/api/plaid/webhook`,
+                webhook: `${process.env.BACKEND_URL || 'https://prosper-backend-iiq2.onrender.com'}/api/plaid/webhook`,
                 account_filters: {
                     depository: {
                         account_subtypes: ['checking', 'savings'],
