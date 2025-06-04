@@ -17,10 +17,6 @@ const validateBudget = [
         .isFloat({ min: 0.01 })
         .withMessage('Budget amount must be a positive number greater than 0'),
 
-    body('period')
-        .isIn(['weekly', 'monthly', 'quarterly', 'yearly'])
-        .withMessage('Period must be weekly, monthly, quarterly, or yearly'),
-
     body('startDate')
         .isISO8601()
         .withMessage('Start date must be a valid ISO date'),

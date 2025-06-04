@@ -8,6 +8,7 @@ import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import Dashboard from "./components/Dashboard";
 import Transactions from "./components/Transactions";
+import Budgets from "./components/Budgets";
 import ConnectedAccounts from "./components/ConnectedAccounts";
 import TestConnection from "./components/TestConnection";
 import Profile from "./components/Profile";
@@ -53,6 +54,7 @@ function App() {
           <Switch>
             <Route path="/" exact component={Dashboard} />
             <Route path="/transactions" component={Transactions} />
+            <Route path="/budgets" component={Budgets} />
             <Route path="/accounts" component={ConnectedAccounts} />
             <Route path="/test-connection" component={TestConnection} />
             <Route path="/profile" component={Profile} />

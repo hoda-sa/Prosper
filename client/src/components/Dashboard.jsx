@@ -334,8 +334,7 @@ const Dashboard = () => {
         } finally {
             setLoading(false);
         }
-    }, [getAccessTokenSilently, processCategoryData, dateFilter, getDateRange, filterTransactionsByDate, calculateSummary]);
-
+    }, [getAccessTokenSilently, processCategoryData, dateFilter, getDateRange, calculateSummary]);
     useEffect(() => {
         if (isAuthenticated) {
             fetchDashboardData();
@@ -621,28 +620,44 @@ const Dashboard = () => {
                             {dashboardData?.budgets ? (
                                 <div>
                                     <div className="text-center mb-3">
-                                        <div className="h4 mb-1">{formatCurrency(dashboardData.budgets.totalRemaining)}</div>
+                                        <div className="h4 mb-1">{formatCurrency(dashboardData.budgets.totalRemaining || 0)}</div>
                                         <small className="text-muted">Remaining this month</small>
                                     </div>
 
                                     <div className="mb-3">
                                         <div className="d-flex justify-content-between mb-1">
                                             <small>Budget Usage</small>
-                                            <small>{Math.round(dashboardData.budgets.overallUtilization)}%</small>
+                                            <small>
+                                                {dashboardData.budgets.totalBudget > 0
+                                                    ? Math.round((dashboardData.budgets.totalSpent / dashboardData.budgets.totalBudget) * 100)
+                                                    : 0
+                                                }%
+                                            </small>
                                         </div>
                                         <Progress
-                                            value={dashboardData.budgets.overallUtilization}
-                                            color={dashboardData.budgets.overallUtilization > 90 ? 'danger' : dashboardData.budgets.overallUtilization > 75 ? 'warning' : 'success'}
+                                            value={dashboardData.budgets.totalBudget > 0
+                                                ? Math.min((dashboardData.budgets.totalSpent / dashboardData.budgets.totalBudget) * 100, 100)
+                                                : 0
+                                            }
+                                            color={
+                                                dashboardData.budgets.totalBudget > 0
+                                                    ? (dashboardData.budgets.totalSpent / dashboardData.budgets.totalBudget) * 100 > 90
+                                                        ? 'danger'
+                                                        : (dashboardData.budgets.totalSpent / dashboardData.budgets.totalBudget) * 100 > 75
+                                                            ? 'warning'
+                                                            : 'success'
+                                                    : 'success'
+                                            }
                                         />
                                     </div>
 
                                     <div className="row text-center">
                                         <div className="col">
-                                            <div className="font-weight-bold">{dashboardData.budgets.activeBudgets}</div>
+                                            <div className="font-weight-bold">{dashboardData.budgets.activeBudgets || 0}</div>
                                             <small className="text-muted">Active Budgets</small>
                                         </div>
                                         <div className="col">
-                                            <div className="font-weight-bold text-danger">{dashboardData.budgets.exceededBudgets}</div>
+                                            <div className="font-weight-bold text-danger">{dashboardData.budgets.exceededBudgets || 0}</div>
                                             <small className="text-muted">Over Budget</small>
                                         </div>
                                     </div>
@@ -707,7 +722,7 @@ const Dashboard = () => {
                     </Card>
                 </Col>
             </Row>
-        </Container>
+        </Container >
     );
 };
 
