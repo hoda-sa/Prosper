@@ -311,7 +311,7 @@ const ConnectedAccounts = () => {
                                 >
                                     {syncing ? (
                                         <>
-                                            <Spinner size="sm" className="me-2" />
+
                                             Syncing...
                                         </>
                                     ) : (
