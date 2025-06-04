@@ -78,7 +78,7 @@ app.use('/api/plaid', authMiddleware, plaidRoutes);
 // Root endpoint
 app.get('/', (req, res) => {
     res.json({
-        message: 'Personal Finance Tracker API',
+        message: 'Prosper Application - backend',
         version: '1.0.0',
         status: 'Active',
         endpoints: {
