@@ -2,6 +2,9 @@
   "name": "auth0-react-sample",
   "version": "0.1.0",
   "private": true,
+  "resolutions": {
+    "express-oauth2-jwt-bearer": "1.6.0"
+  },
   "scripts": {
     "start": "npm-run-all --parallel spa api-server",
     "build": "react-scripts build",
