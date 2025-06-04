@@ -1,5 +1,5 @@
 // utils/api.js
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
 
 // Generic API call function
 export const apiCall = async (endpoint, options = {}, getAccessTokenSilently) => {
