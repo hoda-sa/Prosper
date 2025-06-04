@@ -3,7 +3,7 @@ node_modules/
 npm-debug.log
 yarn-debug.log
 yarn-error.log
-.env
+# .env
 
 # Logs
 logs
@@ -29,8 +29,8 @@ dump/
 # Coverage reports
 coverage/
 
-# Optional: if you use local database tooling
-.env.local
-.env.development
-.env.test
-.env.production
+# # Optional: if you use local database tooling
+# .env.local
+# .env.development
+# .env.test
+# .env.production
