@@ -70,7 +70,7 @@ Make sure you have the following installed:
 3. **Set up the frontend**
 
    ```bash
-   cd ../client
+   cd client
    npm install
    npm start
    ```
@@ -139,23 +139,41 @@ Make sure you have the following installed:
 ### Getting Started
 
 1. **Create an Account**: Sign up using your email and a secure password.
-2. **Sync Your Bank Account**: Go to the *Bank Accounts* tab and add a bank (use `user_good` / `pass_good` for sandbox).
-3. **Sync Transactions**: Click the *Sync Transactions* button to fetch your bank data.
+
+2. **🏦 SYNC YOUR BANK ACCOUNT**: Go to the *Bank Accounts* tab and add a bank  
+   **⚠️ IMPORTANT: Use `user_good` / `pass_good` for sandbox testing**
+
+3. **📊 SYNC TRANSACTIONS**: Click the *Sync Transactions* button to fetch your bank data  
+   **This step is crucial to populate your account with transaction history**
+
 4. **Add a Transaction**: Log your first income or expense.
 5. **Set Budgets**: Define budgets for your expense categories.
 6. **Track Progress**: Monitor your financial goals and spending.
 
 ### Key Features Guide
 
-#### Adding Transactions
+#### Comprehensive Dashboard
+* Get a complete overview of all your finances and budgets at a glance
+* Visual summary of income, expenses, and budget progress
+* Quick access to all key financial metrics
 
+#### Adding Transactions
 * Click *Add Transaction*
 * Choose *Income* or *Expense*
 * Select a category, enter amount, description, and date
 * Click *Save*
 
-#### Creating Budgets
+#### View Bank Transactions
+* Browse all transactions automatically synced from your connected bank accounts
+* Filter and search through your transaction history
+* See real-time updates as new transactions are fetched
 
+#### Managing Categories & Payment Methods
+* Edit and customize transaction categories to fit your needs
+* Add, modify, or remove payment methods
+* Organize transactions with personalized categorization
+
+#### Creating Budgets
 * Navigate to *Budgets*
 * Click *Create New Budget*
 * Select category, amount, and duration
@@ -221,7 +239,7 @@ Prosper/
 
 ## 📄 License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## 📞 Contact
 
