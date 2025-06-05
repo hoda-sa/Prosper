@@ -77,12 +77,7 @@ Make sure you have the following installed:
 
 4. **Set up environment variables**
 
-   In the `server` directory:
-
-   ```bash
-   cp .env.example .env
-   # Edit the .env file with your configuration
-   ```
+   In both `server` and `client` directory:
 
    **Frontend `.env`**
 
@@ -108,7 +103,7 @@ Make sure you have the following installed:
    NODE_ENV=development
 
    # Database
-   MONGODB_URI=mongodb://localhost:27017/prosper
+   MONGODB_URI=mongodb://your-mongodb-atlas-uri
    DB_NAME=prosper
 
    # Auth0 Configuration
