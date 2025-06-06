@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
+import { useLocation } from 'react-router-dom';
 import {
     Container,
     Row,
@@ -28,6 +29,7 @@ import Loading from './Loading';
 
 const Transactions = () => {
     const { getAccessTokenSilently } = useAuth0();
+    const location = useLocation();
     const [transactions, setTransactions] = useState([]);
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -234,6 +236,25 @@ const Transactions = () => {
         setFormData(newFormData);
     };
 
+    // Add this new useEffect to handle query parameters
+    useEffect(() => {
+        const urlParams = new URLSearchParams(location.search);
+        const action = urlParams.get('action');
+        const type = urlParams.get('type');
+
+        if (action === 'add') {
+            // Set the transaction type if provided
+            if (type === 'income' || type === 'expense') {
+                setFormData(prev => ({
+                    ...prev,
+                    type: type
+                }));
+            }
+            // Open the modal
+            setModal(true);
+        }
+    }, [location.search]);
+
     if (loading) return <Loading />;
 
     return (
@@ -348,19 +369,23 @@ const Transactions = () => {
                                     />
                                 </FormGroup>
                             </Col>
-                            <Col md={1} className="d-flex align-items-end">
-                                <Button
-                                    color="outline-secondary"
-                                    onClick={() => setFilters({
-                                        type: '',
-                                        category: '',
-                                        startDate: '',
-                                        endDate: '',
-                                        search: ''
-                                    })}
-                                >
-                                    Clear
-                                </Button>
+                            <Col lg={1} className="d-flex align-items-end">
+                                <FormGroup className="w-100">
+                                    <Label>&nbsp;</Label>
+                                    <Button
+                                        color="outline-secondary"
+                                        className="w-100"
+                                        onClick={() => setFilters({
+                                            type: '',
+                                            category: '',
+                                            startDate: '',
+                                            endDate: '',
+                                            search: ''
+                                        })}
+                                    >
+                                        Clear
+                                    </Button>
+                                </FormGroup>
                             </Col>
                         </Row>
                     </Form>
