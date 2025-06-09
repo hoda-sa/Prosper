@@ -62,7 +62,30 @@ const checkValidation = (req, res, next) => {
     next();
 };
 
-// GET /api/budgets - Get user's budgets
+
+// Helper function for validating if a budget needs to be renewed
+const checkAndProcessExpiredBudgets = async (userId) => {
+    const expiredBudgets = await Budget.find({
+        userId,
+        endDate: { $lt: new Date() },
+        status: { $in: ['active', 'paused', 'exceeded'] }
+    });
+
+    for (const budget of expiredBudgets) {
+        if (budget.autoRenew.enabled) {
+            budget._isRenewing = true;
+            await budget.renewForNextPeriod();
+            console.log(`✅ Auto-renewed budget: ${budget.name}`);
+        } else {
+            budget.status = 'completed';
+            await budget.save();
+            console.log(`📋 Completed budget: ${budget.name}`);
+        }
+    }
+};
+
+
+// GET /api/budgets - Get authenticated user's budgets
 router.get('/',
     query('status')
         .optional()
@@ -78,6 +101,7 @@ router.get('/',
     asyncHandler(async (req, res) => {
         const userId = req.user.id;
         const { status, period, includeHistory = false } = req.query;
+        await checkAndProcessExpiredBudgets(userId);
 
         const query = { userId };
 
@@ -111,7 +135,7 @@ router.get('/',
     })
 );
 
-// GET /api/budgets/summary - Get budget summary
+// GET /api/budgets/summary - Get total budget summary for Dashboard
 router.get('/summary',
     asyncHandler(async (req, res) => {
         const userId = req.user.id;
@@ -200,9 +224,6 @@ router.post('/',
     checkValidation,
     asyncHandler(async (req, res) => {
         const userId = req.user.id;
-
-        // Check if user can create more budgets (based on subscription)
-        // This would be implemented based on your subscription logic
 
         const budgetData = {
             ...req.body,

@@ -394,7 +394,7 @@ const Dashboard = () => {
 
                     <Col md={8} className="text-center">
 
-                        <h1 className="h3">Your personal finance tracking made simple</h1>
+                        <h1 className="h3">Your Smart Money Management Platform</h1>
                         <p>Sign up or log in to access your financial dashboard.</p>
                         <Button
                             color="primary"
@@ -432,7 +432,7 @@ const Dashboard = () => {
             <Row className="mb-4">
                 <Col md={8}>
 
-                    <h1 className="h3">Welcome back, {user?.name?.split(' ')[0] || 'there'}! 👋</h1>
+                    <h1 className="h3">Welcome, {user?.name?.split(' ')[0] || 'there'}! 👋</h1>
                     <p className="text-muted">Here's your financial overview</p>
                 </Col>
                 <Col md={4}>

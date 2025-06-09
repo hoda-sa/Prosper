@@ -15,6 +15,7 @@ const configuration = new Configuration({
 const plaidClient = new PlaidApi(configuration);
 
 // Plaid products and country codes (required for link token)
+// identity, assets & liabilities could be added later
 const PLAID_PRODUCTS = process.env.PLAID_PRODUCTS
     ? process.env.PLAID_PRODUCTS.split(',')
     : ['transactions', 'accounts'];

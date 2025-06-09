@@ -13,7 +13,7 @@ const { connectDB, closeDB } = require('./config/database');
 // Import route handlers
 const transactionRoutes = require('./routes/transactions');
 const budgetRoutes = require('./routes/budgets');
-const forecastRoutes = require('./routes/forecasts');
+// const forecastRoutes = require('./routes/forecasts');
 const categoryRoutes = require('./routes/categories');
 const userRoutes = require('./routes/users');
 const plaidRoutes = require('./routes/plaid');
@@ -71,7 +71,7 @@ app.get('/health', (req, res) => {
 // API routes
 app.use('/api/transactions', authMiddleware, transactionRoutes);
 app.use('/api/budgets', authMiddleware, budgetRoutes);
-app.use('/api/forecasts', authMiddleware, forecastRoutes);
+// app.use('/api/forecasts', authMiddleware, forecastRoutes);
 app.use('/api/categories', authMiddleware, categoryRoutes);
 app.use('/api/users', authMiddleware, userRoutes);
 app.use('/api/plaid', authMiddleware, plaidRoutes);

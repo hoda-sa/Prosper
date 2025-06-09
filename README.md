@@ -1,17 +1,7 @@
 # Prosper 💰
 
-A comprehensive personal finance tracker designed to help you take control of your financial health and achieve your financial goals.
+A comprehensive Smart Money Management Platform designed to help you take control of your financial health and achieve your financial goals.
 
-## 📋 Table of Contents
-
-* [Features](#features)
-* [Demo](#demo)
-* [Installation](#installation)
-* [Usage](#usage)
-* [Technologies Used](#technologies-used)
-* [Project Structure](#project-structure)
-* [License](#license)
-* [Contact](#contact)
 
 ## ✨ Features
 
@@ -25,7 +15,6 @@ A comprehensive personal finance tracker designed to help you take control of yo
 ### Analytics & Reporting
 
 * **Spending Analysis**: Get a detailed breakdown of expenses by category and time period.
-* **Financial Reports**: Generate monthly and yearly financial reports.
 * **Visual Dashboards**: Interactive charts and graphs to visualize your finances.
 * **Trend Analysis**: Track your spending patterns and trends over time.
 
@@ -34,7 +23,6 @@ A comprehensive personal finance tracker designed to help you take control of yo
 * **Intuitive Interface**: Clean, user-friendly design for smooth navigation.
 * **Responsive Design**: Works seamlessly on desktop, tablet, and mobile devices.
 * **Data Security**: Secure storage and handling of your financial data.
-* **Export Functionality**: Export your data to CSV or PDF.
 
 ## 🚀 Demo
 
@@ -47,7 +35,7 @@ A comprehensive personal finance tracker designed to help you take control of yo
 Make sure you have the following installed:
 
 * [Node.js](https://nodejs.org/) (v14 or higher)
-* [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
+* [npm](https://www.npmjs.com/)
 * [Git](https://git-scm.com/)
 
 ### Setup
@@ -144,9 +132,9 @@ Make sure you have the following installed:
    **⚠️ IMPORTANT: Use `user_good` / `pass_good` for sandbox testing**
 
 3. **📊 SYNC TRANSACTIONS**: Click the *Sync Transactions* button to fetch your bank data  
-   **This step is crucial to populate your account with transaction history**
+   **This step is crucial to fetch your most up to date transaction history**
 
-4. **Add a Transaction**: Log your first income or expense.
+4. **Add a Transaction**: Log your income or expense, important for cash transactions.
 5. **Set Budgets**: Define budgets for your expense categories.
 6. **Track Progress**: Monitor your financial goals and spending.
 
@@ -195,7 +183,7 @@ Make sure you have the following installed:
 * **Node.js**
 * **Express.js**
 * **MongoDB**
-* **Auth0**
+* **Auth0 (JWT)**
 * **Plaid API**
 
 ### Tools & Deployment
@@ -203,6 +191,7 @@ Make sure you have the following installed:
 * **Git**
 * **npm**
 * **Render**
+* **mocha-chai & sinon**
 * **ESLint / Prettier**
 
 ## 📁 Project Structure
@@ -236,6 +225,13 @@ Prosper/
 │   ├── package.json
 │   └── server.js
 ```
+
+## Future Enhancements
+
+* **Mobile App**: Access Prosper through a mobile application.
+* **Automatic Sync**: Automatically sync transactions eveytime a user logs in.
+* **Export Functionality**: Export your data to CSV or PDF.
+* **Financial Reports**: Generate monthly and yearly financial reports.
 
 ## 📄 License
 

@@ -1,3 +1,7 @@
+/**
+ * NOTE: Features like Craete and Delete categories are for future versions of the app.
+ */
+
 const mongoose = require('mongoose');
 
 const categorySchema = new mongoose.Schema({

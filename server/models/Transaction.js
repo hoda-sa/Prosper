@@ -313,10 +313,10 @@ transactionSchema.methods.autoCategorizе = function () {
 
     // Define category keywords
     const categoryRules = {
-        'groceries': ['grocery', 'supermarket', 'walmart', 'costco', 'kroger'],
-        'restaurants': ['restaurant', 'cafe', 'coffee', 'pizza', 'burger'],
-        'gas': ['gas', 'fuel', 'shell', 'exxon', 'bp'],
-        'utilities': ['electric', 'water', 'gas bill', 'internet', 'phone'],
+        'groceries': ['grocery', 'supermarket', 'walmart', 'costco', 'kroger', 'Safeway'],
+        'restaurants': ['restaurant', 'cafe', 'coffee', 'pizza', 'burger', 'Starbucks'],
+        'gas': ['gas', 'fuel', 'shell', 'exxon', 'bp', 'shell', 'esso', 'chevron'],
+        'utilities': ['electric', 'water', 'gas bill', 'internet', 'phone', 'hydro'],
         'entertainment': ['movie', 'netflix', 'spotify', 'games'],
         'shopping': ['amazon', 'store', 'mall', 'purchase'],
         'healthcare': ['hospital', 'doctor', 'pharmacy', 'medical'],

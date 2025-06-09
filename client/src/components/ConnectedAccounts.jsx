@@ -9,7 +9,6 @@ import {
     Button,
     Alert,
     Badge,
-    Spinner,
     Modal,
     ModalHeader,
     ModalBody,
@@ -287,7 +286,6 @@ const ConnectedAccounts = () => {
         return (
             <Loading />
 
-
         );
     }
 
@@ -541,7 +539,6 @@ const ConnectedAccounts = () => {
                     <Button color="danger" onClick={disconnectAccount} disabled={loading}>
                         {loading ? (
                             <>
-                                <Spinner size="sm" className="me-2" />
                                 Disconnecting...
                             </>
                         ) : (

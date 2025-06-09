@@ -1,5 +1,10 @@
 const { expressjwt: jwt } = require('express-jwt');
+
+// Dynamic Key Retrieval
+/* Instead of a static secret, it fetches Auth0's public keys from their JWKS (JSON Web Key Set) endpoint.
+This allows Auth0 to rotate keys for security without breaking the app. */
 const jwksRsa = require('jwks-rsa');
+
 
 // Auth0 JWT verification middleware
 const authMiddleware = jwt({
@@ -138,7 +143,7 @@ const jwtErrorHandler = (err, req, res, next) => {
     next(err);
 };
 
-// Combined middleware that includes user extraction
+// Combined middleware that includes user extraction for cleaner code
 const authWithUserInfo = [authMiddleware, extractUserInfo];
 const optionalAuthWithUserInfo = [optionalAuth, extractUserInfo];
 

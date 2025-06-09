@@ -1,3 +1,11 @@
+/**
+ * NOTE: Currently using Auth0 for user management and profile data.
+ * This schema is prepared for future user data storage and advanced features
+ * but most user information is handled directly through Auth0's user profile.
+ * Features like financial profiles, subscription management, and usage stats
+ * are designed for future app versions when we move beyond basic Auth0 integration.
+ */
+
 const mongoose = require('mongoose');
 
 const userSchema = new mongoose.Schema({

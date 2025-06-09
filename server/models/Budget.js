@@ -1,3 +1,10 @@
+/**
+ * NOTE: This schema includes advanced features planned for future app versions.
+ * Current implementation uses basic budgeting functionality.
+ * Features like sharing, analytics, rollover, and auto-renewal are prepared
+ * for upcoming releases but may not be fully utilized yet.
+ */
+
 const mongoose = require('mongoose');
 
 const budgetSchema = new mongoose.Schema({
@@ -118,7 +125,7 @@ const budgetSchema = new mongoose.Schema({
 
     // Historical tracking
     history: [{
-        period: String, // e.g., "2024-01", "2024-Q1"
+        period: String,
         budgetAmount: Number,
         actualSpent: Number,
         variance: Number,

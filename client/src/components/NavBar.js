@@ -152,7 +152,7 @@ const NavBar = () => {
                       style={{ objectFit: 'cover' }}
                     />
                     <span className="d-none d-xl-inline text-truncate" style={{ maxWidth: '120px' }}>
-                      {user.name}
+                      {user.given_name}
                     </span>
                   </DropdownToggle>
                   <DropdownMenu end>
@@ -169,7 +169,7 @@ const NavBar = () => {
                       <FontAwesomeIcon icon="user" className="me-2" />
                       Profile
                     </DropdownItem>
-                    
+
                     {/* Updating user information and settings is 
                     out of scope for this iteration of the project. */}
 
