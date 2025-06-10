@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
-const path = require('path'); 
+const path = require('path');
 
 
 // Import database configuration
@@ -80,17 +80,17 @@ app.use('/api/plaid', authMiddleware, plaidRoutes);
 
 if (process.env.NODE_ENV === 'production') {
     // Serve static files from the React build
-    app.use(express.static(path.join(__dirname, 'build')));
-    
+    app.use(express.static(path.join(__dirname, '../build')));
+
     // Handle React routing - return all non-API requests to React app
     app.get('*', (req, res, next) => {
         // Skip API routes
         if (req.path.startsWith('/api/') || req.path.startsWith('/health')) {
             return next();
         }
-        
+
         // Serve React app for all other routes
-        res.sendFile(path.join(__dirname, 'build', 'index.html'));
+        res.sendFile(path.join(__dirname, '../build', 'index.html'));
     });
 }
 
