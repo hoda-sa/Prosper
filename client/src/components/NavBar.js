@@ -142,7 +142,7 @@ const NavBar = () => {
               )}
               {isAuthenticated && (
                 <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret className="d-flex align-items-center px-2">
+                  <DropdownToggle nav caret className="d-flex align-items-center px-4">
                     <img
                       src={user.picture}
                       alt="Profile"
