@@ -117,7 +117,7 @@ const CategoryPieChart = ({
                 </ResponsiveContainer>
 
                 {/* Category breakdown list for smaller screens */}
-                <div className="d-md-none mt-3">
+                <div className="d-md-none mt-4">
                     {data.map((item, index) => (
                         <div key={item.name} className="d-flex justify-content-between align-items-center py-1">
                             <div className="d-flex align-items-center">

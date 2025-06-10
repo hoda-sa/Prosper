@@ -1,3 +1,31 @@
+/*
+ * TestConnection Component - Development Debugging Tool
+ * 
+ * path: http://localhost:3000/test-connection
+ * This component was created during the early development phase to systematically
+ * troubleshoot and identify connection issues between the frontend and backend.
+ * 
+ * What it tests:
+ * 1. Backend Health Check - Verifies the server is running and responsive
+ * 2. Auth0 Token Generation - Tests if authentication tokens are being created properly
+ * 3. Protected API Calls - Validates that authenticated requests work end-to-end
+ * 
+ * Why this was needed:
+ * - During development, it was difficult to pinpoint where connection failures occurred
+ * - Could be network issues, auth problems, CORS issues, or backend configuration
+ * - This component isolates each step of the connection process for debugging
+ * - Displays detailed error messages and response data for troubleshooting
+ * 
+ * Usage during development:
+ * - Run this component when frontend-backend connection issues arise
+ * - Check which specific test fails to narrow down the problem area
+ * - View environment variables to ensure proper configuration
+ * - Examine actual API responses and error messages
+ * 
+ * Note: This is a development utility and should be removed or secured in production
+ */
+
+
 import React, { useState, useEffect } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Alert, Button, Card, CardBody, Container } from 'reactstrap';

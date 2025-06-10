@@ -157,7 +157,7 @@ Make sure you have the following installed:
 * See real-time updates as new transactions are fetched
 
 #### Managing Categories & Payment Methods
-* Edit and customize transaction categories to fit your needs
+* Edit transaction categories to fit your needs
 * Add, modify, or remove payment methods
 * Organize transactions with personalized categorization
 

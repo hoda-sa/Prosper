@@ -68,10 +68,11 @@ const Budgets = () => {
             const [budgetsResponse, categoriesResponse, summaryResponse] = await Promise.all([
                 budgetAPI.getBudgets(getAccessTokenSilently),
                 categoryAPI.getCategories(getAccessTokenSilently),
-                budgetAPI.getBudgetSummary(getAccessTokenSilently).catch(err => {
-                    console.warn('Could not fetch budget summary:', err);
-                    return { data: null };
-                })
+                budgetAPI.getBudgetSummary(getAccessTokenSilently)
+                    .catch(err => {
+                        console.warn('Could not fetch budget summary:', err);
+                        return { data: null };
+                    })
             ]);
 
             console.log('✅ Budgets:', budgetsResponse.data?.length || 0);
@@ -180,17 +181,18 @@ const Budgets = () => {
         setEditingBudget(null);
     };
 
+    // Helper functions
     const formatCurrency = (amount) => {
         return new Intl.NumberFormat('en-US', {
             style: 'currency',
-            currency: 'USD'
+            currency: 'CAD'
         }).format(amount);
     };
 
     const getBudgetHealthColor = (utilizationPercentage) => {
         if (utilizationPercentage >= 90) return 'danger';
         if (utilizationPercentage >= 75) return 'warning';
-        if (utilizationPercentage < 50) return 'success';
+        if (utilizationPercentage <= 74) return 'success';
         return 'primary';
     };
 
