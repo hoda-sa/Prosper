@@ -42,11 +42,11 @@ const limiter = rateLimit({
 // CORS configuration
 const corsOptions = {
     origin: [
-        process.env.FRONTEND_URL || 'http://localhost:3000',
-        'https://prosper-frontend.onrender.com',
+        process.env.FRONTEND_URL || 'https://prosper.hodaaghaei.com',
         'http://localhost:3001',
     ],
     credentials: true,
+    optionsSuccessStatus: 200,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
