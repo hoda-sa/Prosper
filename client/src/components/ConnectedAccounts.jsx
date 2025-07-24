@@ -384,7 +384,7 @@ const ConnectedAccounts = () => {
                         </p> */}
                         <h4>No Bank Accounts Connected</h4>
                         <p className="text-muted mb-4">
-                            This applicatio is currently in sandbox environment. To link a test bank account and use the features, please use the credientials below:
+                            This application is currently in a sandbox environment. To link a test bank account and use the features, please use the credentials below.:
                         </p>
                         <p>
                             Username: user_good <br/>
