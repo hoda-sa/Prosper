@@ -378,9 +378,17 @@ const ConnectedAccounts = () => {
                 <Card className="text-center py-5">
                     <CardBody>
                         <FontAwesomeIcon icon="university" size="3x" className="text-muted mb-4" />
-                        <h4>No Bank Accounts Connected</h4>
+                        {/* <h4>No Bank Accounts Connected</h4>
                         <p className="text-muted mb-4">
                             Connect your bank account to automatically import transactions and get a complete view of your finances.
+                        </p> */}
+                        <h4>No Bank Accounts Connected</h4>
+                        <p className="text-muted mb-4">
+                            This applicatio is currently in sandbox environment. To link a test bank account and use the features, please use the credientials below:
+                        </p>
+                        <p>
+                            Username: user_good <br/>
+                            Password: pass_good
                         </p>
                         <div className="d-flex justify-content-center">
                             <PlaidLink
